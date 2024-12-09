@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отправка сообщения</title>
+</head>
+<body>
+    <h1>Отправить сообщение</h1>
+    <form id="messageForm">
+        <label for="type">Тип:</label>
+        <input type="text" id="type" name="type" required><br><br>
+
+        <label for="content">Содержание:</label>
+        <textarea id="content" name="content" required></textarea><br><br>
+
+        <button type="submit">Отправить</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const type = document.getElementById('type').value;
+            const content = document.getElementById('content').value;
+
+            try {
+                const response = await fetch('http://localhost:8080/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        'type': type,
+                        'content': content
+                    })
+                });
+
+                const result = await response.text();
+                document.getElementById('response').innerText = result;
+            } catch (error) {
+                console.error('Ошибка при отправке сообщения:', error);
+            }
+        });
+    </script>
+</body>
+</html>

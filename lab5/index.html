@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles Dashboard</title>
+    <script>
+        const ws = new WebSocket('ws://localhost:8081/ws');
+
+        ws.onmessage = function(event) {
+            const articles = JSON.parse(event.data);
+            const tbody = document.getElementById('articlesTable').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = ''; 
+
+            articles.forEach(article => {
+                const row = tbody.insertRow();
+                row.insertCell(0).innerText = article.id;
+                row.insertCell(1).innerText = article.title;
+                row.insertCell(2).innerText = article.text;
+            });
+        };
+
+        window.onload = function() {
+            fetch('/articles')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('articlesTable').getElementsByTagName('tbody')[0];
+                    data.forEach(article => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).innerText = article.id;
+                        row.insertCell(1).innerText = article.title;
+                        row.insertCell(2).innerText = article.text;
+                    });
+                });
+        };
+    </script>
+</head>
+<body>
+    <h1>Articles Dashboard</h1>
+    <table id="articlesTable" border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Text</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be loaded here -->
+        </tbody>
+    </table>
+</body>
+</html>

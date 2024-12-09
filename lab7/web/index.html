@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>FTP WebSocket Client</title>
+</head>
+<body>
+    <h1>FTP WebSocket Client</h1>
+    
+    <div>
+        <h3>Connection to FTP</h3>
+        <input type="text" id="ftpHost" placeholder="FTP host" />
+        <input type="text" id="ftpLogin" placeholder="Login" />
+        <input type="password" id="ftpPassword" placeholder="Password" />
+        <button onclick="connectFTP()">Connect</button>
+    </div>
+
+    <div id="output"></div>
+
+    <script>
+        var ws;
+
+        function openWebSocket() {
+            ws = new WebSocket("ws://185.104.251.226:55187/ws");
+
+            ws.onopen = function() {
+                console.log("WebSocket connection has established");
+            };
+
+            ws.onmessage = function(event) {
+                document.getElementById("output").innerHTML = event.data;
+
+                if (event.data === "Successfull connection to FTP server!") {
+                    openNewWindow();
+                }
+            };
+
+            ws.onerror = function(error) {
+                console.log("Error WebSocket: ", error);
+            };
+        }
+
+        function connectFTP() {
+            var host = document.getElementById("ftpHost").value;
+            var login = document.getElementById("ftpLogin").value;
+            var password = document.getElementById("ftpPassword").value;
+
+            var connectCommand = `connect ${host} ${login} ${password}`;
+            ws.send(connectCommand);
+        }
+
+        function openNewWindow() {
+            var newWindow = window.open("", "_blank", "width=800,height=600");
+            newWindow.document.write("<h1>FTP Interface</h1>");
+            newWindow.document.write("<div><h3>State of FTP connection: alive</h3></div>");
+            newWindow.document.write("<div id='newWindowOutput'></div>");
+            newWindow.document.write("<div><input type='text' id='newCommand' placeholder='Type FTP command' /></div>");
+            newWindow.document.write("<div><button onclick='sendCommandInNewWindow()'>Send command</button></div>");
+            
+            newWindow.ws = ws;
+
+            newWindow.sendCommandInNewWindow = function() {
+                var command = newWindow.document.getElementById("newCommand").value;
+                newWindow.ws.send(command);
+
+                newWindow.ws.onmessage = function(event) {
+                    newWindow.document.getElementById("newWindowOutput").innerHTML += event.data + "<br />";
+                };
+            };
+        }
+
+        openWebSocket();
+    </script>
+</body>
+</html>
