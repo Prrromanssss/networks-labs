@@ -32,7 +32,7 @@ type BlockData struct {
 }
 
 func main() {
-	infuraURL := "https://mainnet.infura.io/v3/b15affaf38644dc2bd0ea5abe72497e0"
+	infuraURL := "https://mainnet.infura.io/v3/133bce8536104f64a3944d1eba074047"
 
 	firebaseURL := "https://my-test-project-e80ce-default-rtdb.europe-west1.firebasedatabase.app/blocks.json"
 
